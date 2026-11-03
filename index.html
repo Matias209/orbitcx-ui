@@ -1,0 +1,641 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OrbitCX UI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ---------- Tokens ---------- */
+  :root {
+    --bg: #060A18;
+    --bg-2: #0B1126;
+    --surface: #0F1733;
+    --surface-2: #152044;
+    --border: #24315E;
+    --text: #E9EDFA;
+    --muted: #8E99BD;
+    --faint: #5B6690;
+
+    --brand: #38BDF8;
+    --brand-2: #34D399;
+
+    --nebula: #A78BFA;
+    --comet: #FB923C;
+    --mission: #38BDF8;
+    --constellation: #FACC15;
+
+    --ok: #34D399;
+    --warn: #FBBF24;
+    --danger: #F87171;
+    --info: #60A5FA;
+
+    --radius: 14px;
+    --radius-sm: 8px;
+    --shadow: 0 10px 30px rgba(0, 0, 0, .35);
+    --stars: 1;
+
+    --font-display: "Space Grotesk", system-ui, sans-serif;
+    --font-body: "Inter", system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, monospace;
+    color-scheme: dark;
+  }
+  :root[data-theme="light"] {
+    --bg: #F4F6FC;
+    --bg-2: #EAEFF9;
+    --surface: #FFFFFF;
+    --surface-2: #F1F4FB;
+    --border: #D8DEEE;
+    --text: #0B1230;
+    --muted: #56607F;
+    --faint: #8A93B0;
+    --brand: #0284C7;
+    --brand-2: #059669;
+    --nebula: #7C3AED;
+    --comet: #EA580C;
+    --mission: #0284C7;
+    --constellation: #CA8A04;
+    --ok: #059669;
+    --warn: #D97706;
+    --danger: #DC2626;
+    --info: #2563EB;
+    --shadow: 0 10px 30px rgba(15, 23, 60, .08);
+    --stars: 0;
+    color-scheme: light;
+  }
+
+  /* ---------- Base ---------- */
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font: 15px/1.6 var(--font-body);
+    overflow-x: hidden;
+  }
+  body::before {
+    content: "";
+    position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    opacity: var(--stars);
+    background:
+      radial-gradient(1px 1px at 12% 18%, #fff 50%, transparent 51%),
+      radial-gradient(1px 1px at 72% 12%, #fff 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 38% 64%, #cfe8ff 50%, transparent 51%),
+      radial-gradient(1px 1px at 88% 46%, #fff 50%, transparent 51%),
+      radial-gradient(1px 1px at 22% 82%, #fff 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 58% 32%, #fde68a 50%, transparent 51%),
+      radial-gradient(1px 1px at 94% 88%, #fff 50%, transparent 51%),
+      radial-gradient(1px 1px at 6% 52%, #fff 50%, transparent 51%),
+      radial-gradient(900px 600px at 85% -10%, rgba(56, 189, 248, .12), transparent 60%),
+      radial-gradient(700px 500px at -10% 30%, rgba(167, 139, 250, .10), transparent 60%);
+    background-size: 340px 340px, 420px 420px, 380px 380px, 300px 300px, 460px 460px, 520px 520px, 360px 360px, 280px 280px, 100% 100%, 100% 100%;
+  }
+  h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0; letter-spacing: -.01em; }
+  .wrap { max-width: 1160px; margin: 0 auto; padding: 0 16px; }
+  section { padding: 56px 0; }
+  .eyebrow {
+    font: 500 12px/1 var(--font-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--brand);
+  }
+  .section-head { margin-bottom: 28px; }
+  .section-head h2 { font-size: clamp(24px, 3vw, 32px); margin-top: 10px; }
+  .section-head p { color: var(--muted); max-width: 640px; margin: 8px 0 0; }
+  .mono { font-family: var(--font-mono); }
+  .gradient-text {
+    background: linear-gradient(90deg, var(--brand), var(--brand-2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+
+  /* ---------- Top bar ---------- */
+  .topbar {
+    position: sticky; top: 0; z-index: 10;
+    backdrop-filter: blur(10px);
+    background: color-mix(in srgb, var(--bg) 75%, transparent);
+    border-bottom: 1px solid var(--border);
+  }
+  .topbar .wrap { display: flex; align-items: center; justify-content: space-between; height: 60px; gap: 12px; }
+  .logo { display: flex; align-items: center; gap: 10px; font: 700 18px var(--font-display); }
+  .logo svg { width: 28px; height: 28px; }
+  .theme-btn {
+    border: 1px solid var(--border); background: var(--surface); color: var(--text);
+    border-radius: 999px; padding: 7px 14px; font: 500 13px var(--font-body); cursor: pointer;
+  }
+
+  /* ---------- Hero ---------- */
+  .hero { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 32px; padding-top: 48px; }
+  .hero h1 { font-size: clamp(44px, 7vw, 76px); margin: 14px 0 6px; }
+  .hero .lead { font: 500 clamp(18px, 2.2vw, 22px)/1.4 var(--font-display); color: var(--text); margin: 0 0 12px; }
+  .hero p { color: var(--muted); max-width: 480px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+
+  .system { position: relative; width: min(100%, 520px); aspect-ratio: 1; margin: 0 auto; }
+  .core {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 22%; display: grid; place-items: center;
+  }
+  .core svg { width: 100%; height: auto; display: block; }
+  .core span {
+    position: absolute; top: 100%; font: 500 11px var(--font-mono); color: var(--muted); letter-spacing: .1em; white-space: nowrap;
+  }
+  .orbit {
+    position: absolute; top: 50%; left: 50%;
+    width: var(--size); aspect-ratio: 1; border-radius: 50%;
+    border: 1px dashed color-mix(in srgb, var(--muted) 35%, transparent);
+    transform: translate(-50%, -50%);
+    animation: spin var(--d) linear infinite; animation-delay: var(--s);
+  }
+  .orbit .body {
+    position: absolute; top: 0; left: 50%;
+    display: grid; justify-items: center; gap: 2px;
+    transform: translate(-50%, -50%);
+    animation: counter var(--d) linear infinite; animation-delay: var(--s);
+  }
+  .orbit .body svg { width: clamp(34px, 9vw, 60px); height: clamp(34px, 9vw, 60px); display: block; }
+  .orbit .tag {
+    font: 500 11px var(--font-mono); padding: 2px 8px; border-radius: 999px; white-space: nowrap;
+    background: color-mix(in srgb, var(--c) 16%, var(--surface)); color: var(--c);
+    border: 1px solid color-mix(in srgb, var(--c) 35%, transparent);
+  }
+  @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+  @keyframes counter {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(-360deg); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .orbit, .orbit .body { animation-play-state: paused; }
+  }
+
+  /* ---------- Modules ---------- */
+  .modules { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+  .module {
+    position: relative; overflow: hidden;
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 22px; box-shadow: var(--shadow);
+  }
+  .module::after {
+    content: ""; position: absolute; inset: 0 0 auto 0; height: 3px; background: var(--c);
+  }
+  .module svg.planet { width: 72px; height: 72px; display: block; margin-bottom: 14px; }
+  .module h3 { font-size: 22px; color: var(--c); }
+  .module .from { font: 400 12px var(--font-mono); color: var(--faint); margin: 4px 0 10px; }
+  .module p { color: var(--muted); margin: 0 0 14px; font-size: 14px; }
+  .module ul { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
+  .module li {
+    font-size: 12px; padding: 3px 9px; border-radius: 999px;
+    background: var(--surface-2); color: var(--muted); border: 1px solid var(--border);
+  }
+  .links { margin-top: 18px; display: grid; gap: 8px; }
+  .link-row {
+    display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 14px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px;
+  }
+  .link-row b { color: var(--text); font-weight: 600; }
+  .link-row .arrow { color: var(--brand); font-family: var(--font-mono); }
+
+  /* ---------- Tokens ---------- */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px;
+  }
+  .card h3 { font-size: 16px; margin-bottom: 14px; }
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 10px; }
+  .swatch { border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border); background: var(--surface-2); }
+  .swatch i { display: block; height: 52px; background: var(--c); }
+  .swatch span { display: block; padding: 6px 8px; font: 400 11px/1.4 var(--font-mono); color: var(--muted); }
+  .swatch span b { display: block; color: var(--text); font: 600 12px var(--font-body); }
+  .type-row { padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .type-row:last-child { border-bottom: 0; }
+  .type-row small { display: block; font: 400 11px var(--font-mono); color: var(--faint); margin-bottom: 4px; }
+
+  /* ---------- Components ---------- */
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+    border-radius: 10px; padding: 10px 16px; font: 600 14px var(--font-body);
+    border: 1px solid transparent; text-decoration: none;
+  }
+  .btn-primary { background: linear-gradient(90deg, var(--brand), var(--brand-2)); color: #04111F; }
+  .btn-secondary { background: var(--surface-2); color: var(--text); border-color: var(--border); }
+  .btn-ghost { background: transparent; color: var(--brand); }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font: 500 12px var(--font-body); padding: 3px 10px; border-radius: 999px;
+    background: color-mix(in srgb, var(--c) 14%, transparent); color: var(--c);
+    border: 1px solid color-mix(in srgb, var(--c) 30%, transparent);
+  }
+  .badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--c); }
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+  .kpi { background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+  .kpi small { color: var(--muted); font-size: 12px; }
+  .kpi b { display: block; font: 600 26px/1.2 var(--font-display); margin: 4px 0 2px; }
+  .kpi .delta { font: 500 12px var(--font-mono); color: var(--ok); }
+  .kpi .delta.down { color: var(--danger); }
+  .field { display: grid; gap: 6px; }
+  .field label { font-size: 13px; color: var(--muted); }
+  .field input {
+    background: var(--bg-2); border: 1px solid var(--border); color: var(--text);
+    border-radius: 10px; padding: 10px 12px; font: 400 14px var(--font-body);
+  }
+  .field input:focus { outline: 2px solid color-mix(in srgb, var(--brand) 50%, transparent); outline-offset: 1px; }
+  .sla { height: 8px; background: var(--surface-2); border-radius: 999px; overflow: hidden; border: 1px solid var(--border); }
+  .sla i { display: block; height: 100%; width: var(--w); background: var(--c); border-radius: 999px; }
+
+  /* ---------- App shell ---------- */
+  .shell {
+    display: grid; grid-template-columns: 220px 1fr; min-height: 520px;
+    background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius);
+    overflow: hidden; box-shadow: var(--shadow);
+  }
+  .side { background: var(--surface); border-right: 1px solid var(--border); padding: 18px 12px; display: flex; flex-direction: column; gap: 4px; }
+  .side .logo { padding: 0 8px 14px; font-size: 16px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 10px;
+    color: var(--muted); font-size: 14px; font-weight: 500;
+  }
+  .nav-item svg { width: 22px; height: 22px; flex: none; }
+  .nav-item.active { background: color-mix(in srgb, var(--c) 14%, transparent); color: var(--text); box-shadow: inset 3px 0 0 var(--c); }
+  .side .org { margin-top: auto; padding: 12px 10px 0; border-top: 1px solid var(--border); font-size: 12px; color: var(--faint); }
+  .main { padding: 20px; min-width: 0; display: grid; gap: 16px; align-content: start; }
+  .main-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+  .main-top h3 { font-size: 20px; }
+  .main-top h3 span { color: var(--comet); }
+  .split { display: grid; grid-template-columns: 1.6fr 1fr; gap: 16px; }
+  .table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 540px; }
+  th { text-align: left; font: 500 11px var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--faint); padding: 12px 14px; border-bottom: 1px solid var(--border); }
+  td { padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  tr:last-child td { border-bottom: 0; }
+  tr.sel td { background: color-mix(in srgb, var(--comet) 8%, transparent); }
+  td .id { font-family: var(--font-mono); color: var(--muted); white-space: nowrap; }
+  .detail { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; display: grid; gap: 12px; align-content: start; }
+  .detail h4 { margin: 0; font: 600 15px var(--font-display); }
+  .detail .meta { font: 400 12px var(--font-mono); color: var(--faint); }
+  .suggest {
+    display: flex; gap: 12px; align-items: center; padding: 12px; border-radius: 10px;
+    background: color-mix(in srgb, var(--nebula) 10%, transparent);
+    border: 1px solid color-mix(in srgb, var(--nebula) 30%, transparent);
+  }
+  .suggest svg { width: 34px; height: 34px; flex: none; }
+  .suggest small { display: block; color: var(--nebula); font: 500 11px var(--font-mono); letter-spacing: .06em; }
+  .suggest b { font-size: 14px; }
+
+  footer { border-top: 1px solid var(--border); padding: 28px 0 40px; color: var(--faint); font-size: 13px; }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 1100px) {
+    .split { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 900px) {
+    .hero, .grid-2 { grid-template-columns: 1fr; }
+    .hero { padding-top: 28px; }
+  }
+  @media (max-width: 760px) {
+    .shell { grid-template-columns: 1fr; }
+    .side { flex-direction: row; overflow-x: auto; border-right: 0; border-bottom: 1px solid var(--border); padding: 10px; }
+    .side .logo, .side .org { display: none; }
+    .nav-item { white-space: nowrap; }
+    .nav-item.active { box-shadow: inset 0 -3px 0 var(--c); }
+    section { padding: 40px 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Planetas: dibujos propios de OrbitCX -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <radialGradient id="g-core" cx="35%" cy="35%" r="70%">
+      <stop offset="0" stop-color="#ECFEFF"/><stop offset=".4" stop-color="#5EEAD4"/><stop offset="1" stop-color="#0284C7"/>
+    </radialGradient>
+    <radialGradient id="g-core-glow">
+      <stop offset=".45" stop-color="#38BDF8" stop-opacity=".45"/><stop offset="1" stop-color="#38BDF8" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="g-neb" cx="35%" cy="30%" r="75%">
+      <stop offset="0" stop-color="#EDE9FE"/><stop offset=".35" stop-color="#A78BFA"/><stop offset=".75" stop-color="#6D28D9"/><stop offset="1" stop-color="#2E1065"/>
+    </radialGradient>
+    <radialGradient id="g-neb-haze">
+      <stop offset=".6" stop-color="#C084FC" stop-opacity=".35"/><stop offset="1" stop-color="#C084FC" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="g-comet" cx="38%" cy="35%" r="70%">
+      <stop offset="0" stop-color="#FFF7ED"/><stop offset=".35" stop-color="#FDBA74"/><stop offset=".8" stop-color="#EA580C"/><stop offset="1" stop-color="#7C2D12"/>
+    </radialGradient>
+    <linearGradient id="g-tail" x1="0.15" y1="0.85" x2="1" y2="0">
+      <stop offset="0" stop-color="#FB923C" stop-opacity=".9"/><stop offset=".5" stop-color="#FDE68A" stop-opacity=".35"/><stop offset="1" stop-color="#FDE68A" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="g-mis" cx="35%" cy="32%" r="75%">
+      <stop offset="0" stop-color="#E0F2FE"/><stop offset=".35" stop-color="#38BDF8"/><stop offset=".75" stop-color="#0369A1"/><stop offset="1" stop-color="#082F49"/>
+    </radialGradient>
+    <radialGradient id="g-con" cx="35%" cy="32%" r="75%">
+      <stop offset="0" stop-color="#FEF9C3"/><stop offset=".35" stop-color="#FACC15"/><stop offset=".78" stop-color="#A16207"/><stop offset="1" stop-color="#422006"/>
+    </radialGradient>
+    <clipPath id="clip-neb"><circle cx="50" cy="50" r="32"/></clipPath>
+    <clipPath id="clip-mis"><circle cx="50" cy="50" r="27"/></clipPath>
+    <clipPath id="clip-low"><rect x="0" y="50" width="100" height="50"/></clipPath>
+
+    <symbol id="p-core" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="48" fill="url(#g-core-glow)"/>
+      <circle cx="50" cy="50" r="26" fill="url(#g-core)"/>
+    </symbol>
+
+    <symbol id="p-nebula" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="46" fill="url(#g-neb-haze)"/>
+      <circle cx="50" cy="50" r="32" fill="url(#g-neb)"/>
+      <g clip-path="url(#clip-neb)" fill="#F0ABFC">
+        <ellipse cx="44" cy="40" rx="30" ry="5" transform="rotate(-14 44 40)" opacity=".28"/>
+        <ellipse cx="56" cy="58" rx="34" ry="6" transform="rotate(-10 56 58)" opacity=".22"/>
+        <ellipse cx="50" cy="70" rx="26" ry="3.5" transform="rotate(-16 50 70)" opacity=".18"/>
+      </g>
+    </symbol>
+
+    <symbol id="p-comet" viewBox="0 0 100 100">
+      <path d="M22 62 Q58 36 95 6 Q70 44 40 80 Z" fill="url(#g-tail)"/>
+      <circle cx="31" cy="69" r="17" fill="url(#g-comet)"/>
+      <circle cx="26" cy="64" r="3" fill="#7C2D12" opacity=".35"/>
+      <circle cx="36" cy="74" r="2" fill="#7C2D12" opacity=".3"/>
+    </symbol>
+
+    <symbol id="p-mission" viewBox="0 0 100 100">
+      <g transform="rotate(-18 50 50)">
+        <ellipse cx="50" cy="50" rx="46" ry="12" fill="none" stroke="#7DD3FC" stroke-width="3.5" opacity=".45"/>
+      </g>
+      <circle cx="50" cy="50" r="27" fill="url(#g-mis)"/>
+      <g clip-path="url(#clip-mis)" fill="#BAE6FD" opacity=".25">
+        <path d="M24 44 Q38 38 52 44 T80 42 L80 48 Q66 54 52 50 T24 50 Z"/>
+        <path d="M24 60 Q40 56 56 62 T80 60 L80 64 Q64 68 50 66 T24 66 Z"/>
+      </g>
+      <g transform="rotate(-18 50 50)">
+        <ellipse cx="50" cy="50" rx="46" ry="12" fill="none" stroke="#7DD3FC" stroke-width="3.5" clip-path="url(#clip-low)"/>
+      </g>
+      <circle cx="88" cy="22" r="4" fill="#E0F2FE"/>
+    </symbol>
+
+    <symbol id="p-constellation" viewBox="0 0 100 100">
+      <circle cx="50" cy="52" r="31" fill="url(#g-con)"/>
+      <g stroke="#FFFBEB" stroke-width="1.3" fill="none" opacity=".85">
+        <polyline points="30,46 43,36 57,47 70,40"/>
+        <polyline points="43,36 49,61 64,67"/>
+      </g>
+      <g fill="#FFFFFF">
+        <circle cx="30" cy="46" r="2.4"/><circle cx="43" cy="36" r="2.8"/><circle cx="57" cy="47" r="2.2"/>
+        <circle cx="70" cy="40" r="2.4"/><circle cx="49" cy="61" r="2.2"/><circle cx="64" cy="67" r="2.6"/>
+      </g>
+      <path d="M84 10 L86 17 L93 19 L86 21 L84 28 L82 21 L75 19 L82 17 Z" fill="#FDE68A"/>
+    </symbol>
+
+    <symbol id="logo-orbit" viewBox="0 0 32 32">
+      <circle cx="16" cy="16" r="6" fill="url(#g-core)"/>
+      <ellipse cx="16" cy="16" rx="14" ry="6" fill="none" stroke="#38BDF8" stroke-width="1.6" transform="rotate(-25 16 16)"/>
+      <circle cx="28" cy="10.5" r="2.2" fill="#34D399"/>
+    </symbol>
+  </defs>
+</svg>
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="logo"><svg><use href="#logo-orbit"/></svg>OrbitCX <span class="mono" style="font-size:11px;color:var(--faint);font-weight:400">UI · v1</span></div>
+    <button class="theme-btn" id="themeBtn" type="button">☀ Modo claro</button>
+  </div>
+</header>
+
+<main>
+  <!-- Hero -->
+  <div class="wrap hero">
+    <div>
+      <span class="eyebrow">Suite · Big Tower</span>
+      <h1><span class="gradient-text">OrbitCX</span></h1>
+      <p class="lead">Tecnología para Customer Experience</p>
+      <p>Cuatro herramientas que giran alrededor del cliente: conocimiento, atención, operación y calidad. Cada módulo es un planeta; todos comparten el mismo sistema de diseño.</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="#modulos">Explorar la suite →</a>
+        <a class="btn btn-secondary" href="#app">Ver una pantalla</a>
+      </div>
+    </div>
+
+    <div class="system" aria-label="Sistema solar de OrbitCX">
+      <div class="orbit" style="--size:44%;--d:36s;--s:-6s;--c:var(--nebula)">
+        <div class="body"><svg><use href="#p-nebula"/></svg><span class="tag">Nebula</span></div>
+      </div>
+      <div class="orbit" style="--size:62%;--d:50s;--s:-30s;--c:var(--comet)">
+        <div class="body"><svg><use href="#p-comet"/></svg><span class="tag">Comet</span></div>
+      </div>
+      <div class="orbit" style="--size:80%;--d:66s;--s:-14s;--c:var(--mission)">
+        <div class="body"><svg><use href="#p-mission"/></svg><span class="tag">Mission Control</span></div>
+      </div>
+      <div class="orbit" style="--size:97%;--d:84s;--s:-60s;--c:var(--constellation)">
+        <div class="body"><svg><use href="#p-constellation"/></svg><span class="tag">Constellation</span></div>
+      </div>
+      <div class="core"><svg><use href="#p-core"/></svg><span>CLIENTE</span></div>
+    </div>
+  </div>
+
+  <!-- Módulos -->
+  <section id="modulos">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">01 · Los planetas</span>
+        <h2>Un módulo para cada momento del cliente</h2>
+        <p>Conocer → Atender → Operar → Mejorar. Cada uno funciona solo, pero juntos se hablan.</p>
+      </div>
+      <div class="modules">
+        <article class="module" style="--c:var(--nebula)">
+          <svg class="planet"><use href="#p-nebula"/></svg>
+          <h3>Nebula</h3>
+          <p>Base de conocimiento del contact center: guiones, matriz de escalamiento, productos y novedades.</p>
+          <ul><li>Knowledge base</li><li>Buscador</li><li>Guiones</li></ul>
+        </article>
+        <article class="module" style="--c:var(--comet)">
+          <svg class="planet"><use href="#p-comet"/></svg>
+          <h3>Comet</h3>
+          <p>Helpdesk de soporte técnico: cada ticket con prioridad, SLA, asignación y trayectoria completa.</p>
+          <ul><li>Tickets</li><li>SLA</li><li>Escalamiento</li></ul>
+        </article>
+        <article class="module" style="--c:var(--mission)">
+          <svg class="planet"><use href="#p-mission"/></svg>
+          <h3>Mission Control</h3>
+          <p>Panel de operación en tiempo real: llamadas, campañas, asistencia, redes y WhatsApp.</p>
+          <ul><li>Monitoreo</li><li>KPIs</li><li>Reportes</li></ul>
+        </article>
+        <article class="module" style="--c:var(--constellation)">
+          <svg class="planet"><use href="#p-constellation"/></svg>
+          <h3>Constellation</h3>
+          <p>Sistema de puntaje y evaluación: cada agente es una estrella y su brillo sale de sus resultados.</p>
+          <ul><li>Ranking</li><li>Calidad</li><li>TMO</li></ul>
+        </article>
+      </div>
+      <div class="links">
+        <div class="link-row"><span class="arrow">↳</span> Un ticket de <b>Comet</b> sugiere el artículo de <b>Nebula</b> que lo resuelve.</div>
+        <div class="link-row"><span class="arrow">↳</span> <b>Mission Control</b> muestra los tickets abiertos y el SLA en vivo.</div>
+        <div class="link-row"><span class="arrow">↳</span> Los tickets resueltos suman puntos en <b>Constellation</b>.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tokens -->
+  <section>
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">02 · Fundamentos</span>
+        <h2>Colores y tipografía</h2>
+        <p>Base azul noche con un acento por planeta. El modo claro conserva los mismos roles con tonos más oscuros para contraste.</p>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <h3>Paleta</h3>
+          <div class="swatches">
+            <div class="swatch" style="--c:var(--bg)"><i></i><span><b>Espacio</b>--bg</span></div>
+            <div class="swatch" style="--c:var(--surface)"><i></i><span><b>Superficie</b>--surface</span></div>
+            <div class="swatch" style="--c:var(--brand)"><i></i><span><b>Órbita</b>--brand</span></div>
+            <div class="swatch" style="--c:var(--brand-2)"><i></i><span><b>Aurora</b>--brand-2</span></div>
+            <div class="swatch" style="--c:var(--nebula)"><i></i><span><b>Nebula</b>--nebula</span></div>
+            <div class="swatch" style="--c:var(--comet)"><i></i><span><b>Comet</b>--comet</span></div>
+            <div class="swatch" style="--c:var(--mission)"><i></i><span><b>Mission</b>--mission</span></div>
+            <div class="swatch" style="--c:var(--constellation)"><i></i><span><b>Constellation</b>--constellation</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Tipografía</h3>
+          <div class="type-row"><small>Títulos · Space Grotesk</small><span style="font:700 28px/1.2 var(--font-display)">Mission Control</span></div>
+          <div class="type-row"><small>Texto · Inter</small><span>El cliente reportó que no puede acceder a su cuenta desde la app.</span></div>
+          <div class="type-row"><small>Datos · JetBrains Mono</small><span class="mono">TK-1042 · TMO 03:42 · SLA 94,2%</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Componentes -->
+  <section>
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">03 · Componentes</span>
+        <h2>Las piezas que comparten todos los módulos</h2>
+      </div>
+      <div class="grid-2">
+        <div class="card" style="display:grid;gap:20px">
+          <div><h3>Botones</h3>
+            <div class="row">
+              <button class="btn btn-primary" type="button">Nuevo ticket</button>
+              <button class="btn btn-secondary" type="button">Exportar</button>
+              <button class="btn btn-ghost" type="button">Ver detalle →</button>
+            </div>
+          </div>
+          <div><h3>Estados</h3>
+            <div class="row">
+              <span class="badge" style="--c:var(--info)">Abierto</span>
+              <span class="badge" style="--c:var(--warn)">En progreso</span>
+              <span class="badge" style="--c:var(--nebula)">Escalado</span>
+              <span class="badge" style="--c:var(--ok)">Resuelto</span>
+              <span class="badge" style="--c:var(--danger)">SLA vencido</span>
+            </div>
+          </div>
+          <div class="field">
+            <label for="demoInput">Buscar en Nebula</label>
+            <input id="demoInput" placeholder="Ej: restablecer contraseña">
+          </div>
+        </div>
+        <div class="card" style="display:grid;gap:20px">
+          <div><h3>Indicadores</h3>
+            <div class="kpis">
+              <div class="kpi"><small>Tickets abiertos</small><b>128</b><span class="delta down">▲ 12 hoy</span></div>
+              <div class="kpi"><small>SLA cumplido</small><b>94,2%</b><span class="delta">▲ 1,8 pts</span></div>
+              <div class="kpi"><small>TMO</small><b class="mono" style="font-family:var(--font-mono)">03:42</b><span class="delta">▼ 0:18</span></div>
+              <div class="kpi"><small>CSAT</small><b>4,6</b><span class="delta">▲ 0,2</span></div>
+            </div>
+          </div>
+          <div><h3>Progreso de SLA</h3>
+            <div style="display:grid;gap:10px">
+              <div class="sla" style="--w:35%;--c:var(--ok)"><i></i></div>
+              <div class="sla" style="--w:72%;--c:var(--warn)"><i></i></div>
+              <div class="sla" style="--w:96%;--c:var(--danger)"><i></i></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pantalla de ejemplo -->
+  <section id="app">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">04 · Así se ve un módulo</span>
+        <h2>Comet: bandeja de tickets</h2>
+        <p>El menú lateral es el mismo en toda la suite: desde cualquier planeta se salta a otro.</p>
+      </div>
+      <div class="shell">
+        <aside class="side">
+          <div class="logo"><svg><use href="#logo-orbit"/></svg>OrbitCX</div>
+          <div class="nav-item" style="--c:var(--nebula)"><svg><use href="#p-nebula"/></svg>Nebula</div>
+          <div class="nav-item active" style="--c:var(--comet)"><svg><use href="#p-comet"/></svg>Comet</div>
+          <div class="nav-item" style="--c:var(--mission)"><svg><use href="#p-mission"/></svg>Mission Control</div>
+          <div class="nav-item" style="--c:var(--constellation)"><svg><use href="#p-constellation"/></svg>Constellation</div>
+          <div class="org">Big Tower · Soporte técnico</div>
+        </aside>
+        <div class="main">
+          <div class="main-top">
+            <h3><span>Comet</span> · Tickets</h3>
+            <div class="row">
+              <button class="btn btn-secondary" type="button">Filtros</button>
+              <button class="btn btn-primary" type="button">+ Nuevo ticket</button>
+            </div>
+          </div>
+          <div class="kpis">
+            <div class="kpi"><small>Abiertos</small><b>128</b></div>
+            <div class="kpi"><small>Vencen hoy</small><b style="color:var(--warn)">9</b></div>
+            <div class="kpi"><small>SLA</small><b>94,2%</b></div>
+          </div>
+          <div class="split">
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>ID</th><th>Asunto</th><th>Prioridad</th><th>SLA</th><th>Estado</th></tr></thead>
+                <tbody>
+                  <tr class="sel"><td><span class="id">TK-1042</span></td><td>No puede acceder a su cuenta</td><td><span class="badge" style="--c:var(--danger)">Alta</span></td><td class="mono">01:20</td><td><span class="badge" style="--c:var(--warn)">En progreso</span></td></tr>
+                  <tr><td><span class="id">TK-1041</span></td><td>Factura duplicada</td><td><span class="badge" style="--c:var(--warn)">Media</span></td><td class="mono">05:45</td><td><span class="badge" style="--c:var(--info)">Abierto</span></td></tr>
+                  <tr><td><span class="id">TK-1039</span></td><td>Consulta de garantía</td><td><span class="badge" style="--c:var(--info)">Baja</span></td><td class="mono">22:10</td><td><span class="badge" style="--c:var(--nebula)">Escalado</span></td></tr>
+                  <tr><td><span class="id">TK-1036</span></td><td>Cambio de plan</td><td><span class="badge" style="--c:var(--info)">Baja</span></td><td class="mono">—</td><td><span class="badge" style="--c:var(--ok)">Resuelto</span></td></tr>
+                  <tr><td><span class="id">TK-1033</span></td><td>Error al pagar online</td><td><span class="badge" style="--c:var(--danger)">Alta</span></td><td class="mono" style="color:var(--danger)">vencido</td><td><span class="badge" style="--c:var(--info)">Abierto</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="detail">
+              <div class="meta">TK-1042 · abierto hace 2 h · canal WhatsApp</div>
+              <h4>No puede acceder a su cuenta</h4>
+              <div class="sla" style="--w:72%;--c:var(--warn)"><i></i></div>
+              <div class="suggest">
+                <svg><use href="#p-nebula"/></svg>
+                <div><small>SUGERIDO DESDE NEBULA</small><b>Restablecer el acceso a la cuenta</b></div>
+              </div>
+              <button class="btn btn-secondary" type="button">Escalar a nivel 2</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">OrbitCX UI · v1 · Big Tower es una empresa ficticia y todos los datos son de ejemplo.</div>
+</footer>
+
+<script>
+  (function () {
+    var root = document.documentElement;
+    var btn = document.getElementById('themeBtn');
+    function apply(theme) {
+      if (theme === 'light') root.setAttribute('data-theme', 'light');
+      else root.removeAttribute('data-theme');
+      btn.textContent = theme === 'light' ? '☾ Modo oscuro' : '☀ Modo claro';
+    }
+    var saved = null;
+    try { saved = localStorage.getItem('orbitcx-theme'); } catch (e) {}
+    apply(saved);
+    btn.addEventListener('click', function () {
+      var next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+      apply(next);
+      try { localStorage.setItem('orbitcx-theme', next); } catch (e) {}
+    });
+  })();
+</script>
+</body>
+</html>

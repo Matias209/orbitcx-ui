@@ -1,0 +1,262 @@
+/* =========================================================
+   OrbitCX UI · v1
+   ---------------------------------------------------------
+   Sistema de diseño compartido por toda la suite OrbitCX:
+   Nebula, Comet, Mission Control y Constellation.
+
+   Cada módulo lo carga con una ruta relativa:
+     <link rel="stylesheet" href="../orbitcx-ui/v1/orbit.css">
+   Funciona igual en local (carpetas hermanas) y en GitHub Pages
+   (matias209.github.io/orbitcx-ui/ y matias209.github.io/orbitcx-nebula/
+   comparten dominio).
+
+   Todas las clases llevan el prefijo "ox-" para no chocar con el
+   CSS propio de cada módulo.
+   ========================================================= */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap");
+
+/* ---------- Tokens ---------- */
+:root {
+  --ox-bg: #060A18;
+  --ox-bg-2: #0B1126;
+  --ox-surface: #0F1733;
+  --ox-surface-2: #152044;
+  --ox-border: #24315E;
+  --ox-text: #E9EDFA;
+  --ox-muted: #8E99BD;
+  --ox-faint: #5B6690;
+
+  --ox-brand: #38BDF8;
+  --ox-brand-2: #34D399;
+
+  --ox-nebula: #A78BFA;
+  --ox-comet: #FB923C;
+  --ox-mission: #38BDF8;
+  --ox-constellation: #FACC15;
+
+  --ox-ok: #34D399;
+  --ox-warn: #FBBF24;
+  --ox-danger: #F87171;
+  --ox-info: #60A5FA;
+
+  /* Acento del módulo actual: cada módulo lo pisa en su <html> */
+  --ox-accent: var(--ox-brand);
+
+  --ox-radius: 14px;
+  --ox-radius-sm: 8px;
+  --ox-shadow: 0 10px 30px rgba(0, 0, 0, .35);
+  --ox-stars: 1;
+
+  --ox-font-display: "Space Grotesk", system-ui, sans-serif;
+  --ox-font-body: "Inter", system-ui, sans-serif;
+  --ox-font-mono: "JetBrains Mono", ui-monospace, monospace;
+  color-scheme: dark;
+}
+:root[data-theme="light"] {
+  --ox-bg: #F4F6FC;
+  --ox-bg-2: #EAEFF9;
+  --ox-surface: #FFFFFF;
+  --ox-surface-2: #F1F4FB;
+  --ox-border: #D8DEEE;
+  --ox-text: #0B1230;
+  --ox-muted: #56607F;
+  --ox-faint: #8A93B0;
+  --ox-brand: #0284C7;
+  --ox-brand-2: #059669;
+  --ox-nebula: #7C3AED;
+  --ox-comet: #EA580C;
+  --ox-mission: #0284C7;
+  --ox-constellation: #CA8A04;
+  --ox-ok: #059669;
+  --ox-warn: #D97706;
+  --ox-danger: #DC2626;
+  --ox-info: #2563EB;
+  --ox-shadow: 0 10px 30px rgba(15, 23, 60, .08);
+  --ox-stars: 0;
+  color-scheme: light;
+}
+:root[data-module="nebula"]        { --ox-accent: var(--ox-nebula); }
+:root[data-module="comet"]         { --ox-accent: var(--ox-comet); }
+:root[data-module="mission"]       { --ox-accent: var(--ox-mission); }
+:root[data-module="constellation"] { --ox-accent: var(--ox-constellation); }
+
+/* ---------- Base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--ox-bg);
+  color: var(--ox-text);
+  font: 15px/1.6 var(--ox-font-body);
+  overflow-x: hidden;
+}
+body::before {
+  content: "";
+  position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  opacity: var(--ox-stars);
+  background:
+    radial-gradient(1px 1px at 12% 18%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 72% 12%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 38% 64%, #cfe8ff 50%, transparent 51%),
+    radial-gradient(1px 1px at 88% 46%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 22% 82%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 58% 32%, #fde68a 50%, transparent 51%),
+    radial-gradient(1px 1px at 94% 88%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 6% 52%, #fff 50%, transparent 51%),
+    radial-gradient(900px 600px at 85% -10%, rgba(56, 189, 248, .12), transparent 60%),
+    radial-gradient(700px 500px at -10% 30%, rgba(167, 139, 250, .10), transparent 60%);
+  background-size: 340px 340px, 420px 420px, 380px 380px, 300px 300px, 460px 460px, 520px 520px, 360px 360px, 280px 280px, 100% 100%, 100% 100%;
+}
+h1, h2, h3, h4 { font-family: var(--ox-font-display); line-height: 1.15; margin: 0; letter-spacing: -.01em; }
+a { color: var(--ox-accent); }
+.ox-mono { font-family: var(--ox-font-mono); }
+.ox-muted { color: var(--ox-muted); }
+.ox-eyebrow {
+  font: 500 12px/1 var(--ox-font-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ox-accent);
+}
+.ox-gradient-text {
+  background: linear-gradient(90deg, var(--ox-brand), var(--ox-brand-2));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.ox-planet { display: block; width: 40px; height: 40px; flex: none; }
+
+/* ---------- Superficies ---------- */
+.ox-card {
+  background: var(--ox-surface); border: 1px solid var(--ox-border);
+  border-radius: var(--ox-radius); padding: 20px;
+}
+.ox-card-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px;
+}
+.ox-card-head h3 { font-size: 15px; }
+.ox-card-head a { font-size: 13px; font-weight: 600; text-decoration: none; }
+.ox-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(var(--min, 260px), 1fr)); }
+
+/* ---------- Botones ---------- */
+.ox-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;
+  border-radius: 10px; padding: 9px 16px; font: 600 14px var(--ox-font-body);
+  border: 1px solid transparent; text-decoration: none; white-space: nowrap;
+}
+.ox-btn-primary { background: linear-gradient(90deg, var(--ox-brand), var(--ox-brand-2)); color: #04111F; }
+.ox-btn-secondary { background: var(--ox-surface-2); color: var(--ox-text); border-color: var(--ox-border); }
+.ox-btn-ghost { background: transparent; color: var(--ox-accent); }
+.ox-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+/* ---------- Badges ---------- */
+.ox-badge {
+  --c: var(--ox-info);
+  display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+  font: 500 12px var(--ox-font-body); padding: 2px 10px; border-radius: 999px;
+  background: color-mix(in srgb, var(--c) 14%, transparent); color: var(--c);
+  border: 1px solid color-mix(in srgb, var(--c) 30%, transparent);
+}
+.ox-badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--c); }
+.ox-badge.is-ok { --c: var(--ox-ok); }
+.ox-badge.is-warn { --c: var(--ox-warn); }
+.ox-badge.is-danger { --c: var(--ox-danger); }
+.ox-badge.is-accent { --c: var(--ox-accent); }
+.ox-chip {
+  display: inline-block; font-size: 12px; padding: 3px 10px; border-radius: 999px;
+  background: var(--ox-surface-2); color: var(--ox-muted); border: 1px solid var(--ox-border);
+}
+
+/* ---------- Indicadores ---------- */
+.ox-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.ox-kpi { background: var(--ox-surface); border: 1px solid var(--ox-border); border-radius: 12px; padding: 14px 16px; }
+.ox-kpi small { color: var(--ox-muted); font-size: 12px; }
+.ox-kpi b { display: block; font: 600 26px/1.2 var(--ox-font-display); margin: 4px 0 2px; }
+.ox-kpi .ox-delta { font: 500 12px var(--ox-font-mono); color: var(--ox-ok); }
+.ox-kpi .ox-delta.is-down { color: var(--ox-danger); }
+.ox-bar { height: 8px; background: var(--ox-surface-2); border-radius: 999px; overflow: hidden; border: 1px solid var(--ox-border); }
+.ox-bar > i { display: block; height: 100%; width: var(--w, 0%); background: var(--c, var(--ox-accent)); border-radius: 999px; }
+
+/* ---------- Formularios ---------- */
+.ox-field { display: grid; gap: 6px; }
+.ox-field label { font-size: 13px; color: var(--ox-muted); }
+.ox-input, .ox-field input, .ox-field select, .ox-field textarea {
+  width: 100%; background: var(--ox-bg-2); border: 1px solid var(--ox-border); color: var(--ox-text);
+  border-radius: 10px; padding: 9px 12px; font: 400 14px var(--ox-font-body);
+}
+.ox-input:focus, .ox-field input:focus, .ox-field select:focus, .ox-field textarea:focus {
+  outline: 2px solid color-mix(in srgb, var(--ox-accent) 50%, transparent); outline-offset: 1px;
+}
+
+/* ---------- Tablas ---------- */
+.ox-table-wrap { overflow-x: auto; background: var(--ox-surface); border: 1px solid var(--ox-border); border-radius: 12px; }
+.ox-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.ox-table th {
+  text-align: left; font: 500 11px var(--ox-font-mono); letter-spacing: .06em; text-transform: uppercase;
+  color: var(--ox-faint); padding: 12px 14px; border-bottom: 1px solid var(--ox-border); white-space: nowrap;
+}
+.ox-table td { padding: 11px 14px; border-bottom: 1px solid var(--ox-border); vertical-align: middle; }
+.ox-table tr:last-child td { border-bottom: 0; }
+.ox-table tbody tr:hover td { background: color-mix(in srgb, var(--ox-accent) 6%, transparent); }
+
+/* ---------- Pestañas ---------- */
+.ox-tabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
+.ox-tab {
+  border: 1px solid var(--ox-border); background: var(--ox-surface); color: var(--ox-muted);
+  border-radius: 999px; padding: 6px 14px; font: 500 13px var(--ox-font-body); cursor: pointer; white-space: nowrap;
+}
+.ox-tab.is-active {
+  color: var(--ox-text); border-color: color-mix(in srgb, var(--ox-accent) 50%, transparent);
+  background: color-mix(in srgb, var(--ox-accent) 14%, var(--ox-surface));
+}
+
+/* ---------- Shell de la app (menú lateral de la suite) ---------- */
+.ox-app { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+.ox-side {
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  background: var(--ox-surface); border-right: 1px solid var(--ox-border);
+  padding: 18px 12px; display: flex; flex-direction: column; gap: 2px;
+}
+.ox-logo { display: flex; align-items: center; gap: 10px; font: 700 17px var(--ox-font-display); color: var(--ox-text); text-decoration: none; padding: 0 8px 12px; }
+.ox-logo svg { width: 28px; height: 28px; }
+.ox-side-label { font: 500 10px var(--ox-font-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ox-faint); padding: 14px 10px 6px; }
+.ox-nav-item {
+  display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px;
+  color: var(--ox-muted); font-size: 14px; font-weight: 500; text-decoration: none;
+}
+.ox-nav-item:hover { color: var(--ox-text); background: var(--ox-surface-2); }
+.ox-nav-item .ox-ic { width: 22px; text-align: center; flex: none; }
+.ox-nav-item svg { width: 22px; height: 22px; flex: none; }
+.ox-nav-item.is-active {
+  color: var(--ox-text);
+  background: color-mix(in srgb, var(--c, var(--ox-accent)) 14%, transparent);
+  box-shadow: inset 3px 0 0 var(--c, var(--ox-accent));
+}
+.ox-nav-item.is-off { opacity: .45; pointer-events: none; }
+.ox-nav-item .ox-count {
+  margin-left: auto; font: 600 11px var(--ox-font-mono); padding: 1px 7px; border-radius: 999px;
+  background: var(--ox-accent); color: #04111F;
+}
+.ox-side-foot { margin-top: auto; padding: 14px 10px 0; border-top: 1px solid var(--ox-border); display: grid; gap: 10px; }
+.ox-side-foot small { color: var(--ox-faint); font-size: 12px; }
+.ox-theme-btn {
+  border: 1px solid var(--ox-border); background: var(--ox-surface-2); color: var(--ox-text);
+  border-radius: 999px; padding: 6px 12px; font: 500 12px var(--ox-font-body); cursor: pointer;
+}
+.ox-main { padding: 24px; min-width: 0; display: grid; gap: 18px; align-content: start; }
+.ox-page-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; }
+.ox-page-head h1 { font-size: clamp(24px, 3vw, 30px); margin-top: 6px; }
+.ox-page-head p { margin: 4px 0 0; color: var(--ox-muted); }
+.ox-menu-btn { display: none; }
+.ox-footer { color: var(--ox-faint); font-size: 12px; padding-top: 10px; border-top: 1px solid var(--ox-border); }
+
+@media (max-width: 860px) {
+  .ox-app { grid-template-columns: 1fr; }
+  .ox-side {
+    position: fixed; z-index: 50; inset: 0 auto 0 0; width: 260px;
+    transform: translateX(-100%); transition: transform .2s ease;
+    box-shadow: var(--ox-shadow);
+  }
+  .ox-app.is-menu-open .ox-side { transform: none; }
+  .ox-menu-btn { display: inline-flex; margin-bottom: 12px; }
+  .ox-main { padding: 16px; }
+}
+
+/* ---------- Utilidades ---------- */
+.ox-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.ox-empty { color: var(--ox-faint); font-size: 14px; padding: 18px; text-align: center; }
+.ox-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
